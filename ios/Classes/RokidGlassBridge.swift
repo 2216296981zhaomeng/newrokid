@@ -15,7 +15,7 @@ public final class RokidGlassBridge: NSObject {
     private static var initializedSessionType = "customView"
 
     private let client: RGCxrClient = CxrClient.shared
-    private let bridgeVersion = "ios-cxrl-1.0.14-customview-icon-20260624"
+    private let bridgeVersion = "ios-cxrl-1.0.15-text-first-20260624"
     private var cancellables = Set<AnyCancellable>()
     private var eventCallback: RokidGlassCallback?
     private var pendingAuthorizationCallback: RokidGlassCallback?
@@ -1339,9 +1339,11 @@ public final class RokidGlassBridge: NSObject {
             appendCustomViewVariant(&variants, name: "compact", json: compactCustomViewJson(title: title, text: text))
             appendCustomViewVariant(&variants, name: "textOnly", json: textOnlyCustomViewJson(text: text))
         }
-        appendCustomViewVariant(&variants, name: "officialSampleIcon", json: officialSampleIconCustomViewJson(title: title, text: text))
-        appendCustomViewVariant(&variants, name: "requested", json: requestedViewJson)
         appendCustomViewVariant(&variants, name: "officialSampleText", json: officialSampleTextCustomViewJson(title: title, text: text))
+        appendCustomViewVariant(&variants, name: "requested", json: requestedViewJson)
+        if boolOption(options, "uploadDefaultIcon", true) {
+            appendCustomViewVariant(&variants, name: "officialSampleIcon", json: officialSampleIconCustomViewJson(title: title, text: text))
+        }
         appendCustomViewVariant(&variants, name: "nativeDefault", json: defaultCustomViewJson(title: title, text: text))
         appendCustomViewVariant(&variants, name: "compact", json: compactCustomViewJson(title: title, text: text))
         appendCustomViewVariant(&variants, name: "textOnly", json: textOnlyCustomViewJson(text: text))
