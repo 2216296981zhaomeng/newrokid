@@ -15,7 +15,7 @@ public final class RokidGlassBridge: NSObject {
     private static var initializedSessionType = "customView"
 
     private let client: RGCxrClient = CxrClient.shared
-    private let bridgeVersion = "ios-cxrl-1.0.12-phone-audio-teleprompter-20260618"
+    private let bridgeVersion = "ios-cxrl-1.0.14-customview-icon-20260624"
     private var cancellables = Set<AnyCancellable>()
     private var eventCallback: RokidGlassCallback?
     private var pendingAuthorizationCallback: RokidGlassCallback?
@@ -239,15 +239,18 @@ public final class RokidGlassBridge: NSObject {
         }
         let delayMs = closeBeforeOpen ? max(250, intOption(options, "openDelayMs", 600)) : max(0, intOption(options, "openDelayMs", 0))
         let attemptTimeoutMs = max(1500, min(12000, intOption(options, "openAttemptTimeoutMs", 6000)))
-        DispatchQueue.main.asyncAfter(deadline: .now() + (Double(delayMs) / 1000.0)) { [weak self] in
-            self?.openCustomViewVariant(
-                requestId: requestId,
-                variants: variants,
-                index: 0,
-                callback: callback,
-                attemptTimeoutMs: attemptTimeoutMs
-            )
+        let beginOpen = { [weak self] in
+            DispatchQueue.main.asyncAfter(deadline: .now() + (Double(delayMs) / 1000.0)) { [weak self] in
+                self?.openCustomViewVariant(
+                    requestId: requestId,
+                    variants: variants,
+                    index: 0,
+                    callback: callback,
+                    attemptTimeoutMs: attemptTimeoutMs
+                )
+            }
         }
+        uploadDefaultCustomViewIconsIfNeeded(options, completion: beginOpen)
     }
 
     public func updateCustomView(_ options: NSDictionary?, callback: RokidGlassCallback?) {
@@ -1336,6 +1339,7 @@ public final class RokidGlassBridge: NSObject {
             appendCustomViewVariant(&variants, name: "compact", json: compactCustomViewJson(title: title, text: text))
             appendCustomViewVariant(&variants, name: "textOnly", json: textOnlyCustomViewJson(text: text))
         }
+        appendCustomViewVariant(&variants, name: "officialSampleIcon", json: officialSampleIconCustomViewJson(title: title, text: text))
         appendCustomViewVariant(&variants, name: "requested", json: requestedViewJson)
         appendCustomViewVariant(&variants, name: "officialSampleText", json: officialSampleTextCustomViewJson(title: title, text: text))
         appendCustomViewVariant(&variants, name: "nativeDefault", json: defaultCustomViewJson(title: title, text: text))
@@ -1353,6 +1357,27 @@ public final class RokidGlassBridge: NSObject {
         guard !trimmed.isEmpty else { return }
         guard !variants.contains(where: { $0.json == trimmed }) else { return }
         variants.append((name: name, json: trimmed))
+    }
+
+    private func uploadDefaultCustomViewIconsIfNeeded(_ options: NSDictionary?, completion: @escaping () -> Void) {
+        guard boolOption(options, "uploadDefaultIcon", true) else {
+            completion()
+            return
+        }
+        let iconsJson = jsonString([
+            [
+                "name": "icon_0",
+                "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII="
+            ]
+        ])
+        client.sendCustomViewIcons(iconsJson) { [weak self] success in
+            DispatchQueue.main.async {
+                self?.emit("customViewIconsUploaded", self?.customViewPayload(extra: [
+                    "success": success
+                ]) ?? [:])
+                completion()
+            }
+        }
     }
 
     private func compactCustomViewJson(title: String, text: String) -> String {
@@ -1440,6 +1465,72 @@ public final class RokidGlassBridge: NSObject {
                                 "text": text,
                                 "textColor": "#FF00FF00",
                                 "textSize": "16sp",
+                                "layout_centerVertical": "true"
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ])
+    }
+
+    private func officialSampleIconCustomViewJson(title: String, text: String) -> String {
+        return jsonString([
+            "type": "LinearLayout",
+            "props": [
+                "layout_width": "match_parent",
+                "layout_height": "match_parent",
+                "orientation": "vertical",
+                "gravity": "center_vertical",
+                "paddingTop": "140dp",
+                "paddingBottom": "100dp",
+                "backgroundColor": "#FF000000"
+            ],
+            "children": [
+                [
+                    "type": "TextView",
+                    "props": [
+                        "id": "tv_title",
+                        "layout_width": "wrap_content",
+                        "layout_height": "wrap_content",
+                        "text": title,
+                        "textColor": "#FF00FF00",
+                        "textSize": "16sp",
+                        "textStyle": "bold",
+                        "marginBottom": "20dp"
+                    ]
+                ],
+                [
+                    "type": "RelativeLayout",
+                    "props": [
+                        "layout_width": "match_parent",
+                        "layout_height": "100dp",
+                        "paddingStart": "10dp",
+                        "backgroundColor": "#000000"
+                    ],
+                    "children": [
+                        [
+                            "type": "ImageView",
+                            "props": [
+                                "id": "iv_icon",
+                                "layout_width": "60dp",
+                                "layout_height": "60dp",
+                                "name": "icon_0",
+                                "layout_alignParentStart": "true",
+                                "layout_centerVertical": "true"
+                            ]
+                        ],
+                        [
+                            "type": "TextView",
+                            "props": [
+                                "id": "textView",
+                                "layout_width": "wrap_content",
+                                "layout_height": "wrap_content",
+                                "text": text,
+                                "textColor": "#FF00FF00",
+                                "textSize": "16sp",
+                                "marginStart": "15dp",
+                                "layout_toEndOf": "iv_icon",
                                 "layout_centerVertical": "true"
                             ]
                         ]
