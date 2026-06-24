@@ -1,0 +1,603 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.2.4 (swiftlang-6.2.4.1.4 clang-1700.6.4.2)
+// swift-module-flags: -target arm64-apple-ios12.0 -enable-objc-interop -enable-library-evolution -swift-version 6 -enforce-exclusivity=checked -O -enable-experimental-feature DebugDescriptionMacro -module-name CocoaLumberjack
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface -formal-cxx-interoperability-mode=off -interface-compiler-version 6.2.4
+@_exported import CocoaLumberjack
+import Combine
+import Swift
+import Synchronization
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+#if compiler(>=5.3) && $NonescapableTypes
+@inlinable public func _DDLogMessage(_ messageFormat: @autoclosure () -> CocoaLumberjack.DDLogMessageFormat, level: CocoaLumberjack.DDLogLevel, flag: CocoaLumberjack.DDLogFlag, context: Swift.Int, file: Swift.StaticString, function: Swift.StaticString, line: Swift.UInt, tag: Any?, asynchronous: Swift.Bool?, ddlog: CocoaLumberjack.DDLog) {
+     
+     
+#if compiler(>=6.2)
+    if level.rawValue & flag.rawValue != 0 && dynamicLogLevel.rawValue & flag.rawValue != 0 {
+        let logMessage = DDLogMessage(messageFormat(),
+                                      level: level,
+                                      flag: flag,
+                                      context: context,
+                                      file: file,
+                                      function: function,
+                                      line: line,
+                                      tag: tag)
+        ddlog.log(asynchronous: asynchronous ?? asyncLoggingEnabled, message: logMessage)
+    }
+#else
+    if level.rawValue & flag.rawValue != 0 && dynamicLogLevel.rawValue & flag.rawValue != 0 {
+        let logMessage = DDLogMessage(messageFormat(),
+                                      level: level,
+                                      flag: flag,
+                                      context: context,
+                                      file: file,
+                                      function: function,
+                                      line: line,
+                                      tag: tag)
+        ddlog.log(asynchronous: asynchronous ?? asyncLoggingEnabled, message: logMessage)
+    }
+#endif
+}
+#endif
+#if compiler(>=5.3) && $NonescapableTypes
+@inlinable public func DDLogDebug(_ message: @autoclosure () -> CocoaLumberjack.DDLogMessageFormat, level: CocoaLumberjack.DDLogLevel = DDDefaultLogLevel, context: Swift.Int = 0, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line, tag: Any? = nil, asynchronous: Swift.Bool? = nil, ddlog: CocoaLumberjack.DDLog = .sharedInstance) {
+    _DDLogMessage(message(),
+                  level: level,
+                  flag: .debug,
+                  context: context,
+                  file: file,
+                  function: function,
+                  line: line,
+                  tag: tag,
+                  asynchronous: asynchronous,
+                  ddlog: ddlog)
+}
+#endif
+#if compiler(>=5.3) && $NonescapableTypes
+@inlinable public func DDLogInfo(_ message: @autoclosure () -> CocoaLumberjack.DDLogMessageFormat, level: CocoaLumberjack.DDLogLevel = DDDefaultLogLevel, context: Swift.Int = 0, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line, tag: Any? = nil, asynchronous: Swift.Bool? = nil, ddlog: CocoaLumberjack.DDLog = .sharedInstance) {
+    _DDLogMessage(message(),
+                  level: level,
+                  flag: .info,
+                  context: context,
+                  file: file,
+                  function: function,
+                  line: line,
+                  tag: tag,
+                  asynchronous: asynchronous,
+                  ddlog: ddlog)
+}
+#endif
+#if compiler(>=5.3) && $NonescapableTypes
+@inlinable public func DDLogWarn(_ message: @autoclosure () -> CocoaLumberjack.DDLogMessageFormat, level: CocoaLumberjack.DDLogLevel = DDDefaultLogLevel, context: Swift.Int = 0, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line, tag: Any? = nil, asynchronous: Swift.Bool? = nil, ddlog: CocoaLumberjack.DDLog = .sharedInstance) {
+    _DDLogMessage(message(),
+                  level: level,
+                  flag: .warning,
+                  context: context,
+                  file: file,
+                  function: function,
+                  line: line,
+                  tag: tag,
+                  asynchronous: asynchronous,
+                  ddlog: ddlog)
+}
+#endif
+#if compiler(>=5.3) && $NonescapableTypes
+@inlinable public func DDLogVerbose(_ message: @autoclosure () -> CocoaLumberjack.DDLogMessageFormat, level: CocoaLumberjack.DDLogLevel = DDDefaultLogLevel, context: Swift.Int = 0, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line, tag: Any? = nil, asynchronous: Swift.Bool? = nil, ddlog: CocoaLumberjack.DDLog = .sharedInstance) {
+    _DDLogMessage(message(),
+                  level: level,
+                  flag: .verbose,
+                  context: context,
+                  file: file,
+                  function: function,
+                  line: line,
+                  tag: tag,
+                  asynchronous: asynchronous,
+                  ddlog: ddlog)
+}
+#endif
+#if compiler(>=5.3) && $NonescapableTypes
+@inlinable public func DDLogError(_ message: @autoclosure () -> CocoaLumberjack.DDLogMessageFormat, level: CocoaLumberjack.DDLogLevel = DDDefaultLogLevel, context: Swift.Int = 0, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line, tag: Any? = nil, asynchronous: Swift.Bool? = nil, ddlog: CocoaLumberjack.DDLog = .sharedInstance) {
+    _DDLogMessage(message(),
+                  level: level,
+                  flag: .error,
+                  context: context,
+                  file: file,
+                  function: function,
+                  line: line,
+                  tag: tag,
+                  asynchronous: asynchronous ?? false,
+                  ddlog: ddlog)
+}
+#endif
+#if compiler(>=5.3) && $NonescapableTypes
+@available(*, deprecated, message: "Use an interpolated DDLogMessageFormat instead")
+@inlinable @_disfavoredOverload public func _DDLogMessage(_ message: @autoclosure () -> Any, level: CocoaLumberjack.DDLogLevel, flag: CocoaLumberjack.DDLogFlag, context: Swift.Int, file: Swift.StaticString, function: Swift.StaticString, line: Swift.UInt, tag: Any?, asynchronous: Swift.Bool?, ddlog: CocoaLumberjack.DDLog) {
+     
+     
+    _DDLogMessage(.init(_formattedMessage: String(describing: message())),
+                  level: level,
+                  flag: flag,
+                  context: context,
+                  file: file,
+                  function: function,
+                  line: line,
+                  tag: tag,
+                  asynchronous: asynchronous,
+                  ddlog: ddlog)
+}
+#endif
+#if compiler(>=5.3) && $NonescapableTypes
+@available(*, deprecated, message: "Use an interpolated DDLogMessageFormat instead")
+@inlinable @_disfavoredOverload public func DDLogDebug(_ message: @autoclosure () -> Any, level: CocoaLumberjack.DDLogLevel = DDDefaultLogLevel, context: Swift.Int = 0, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line, tag: Any? = nil, asynchronous async: Swift.Bool? = nil, ddlog: CocoaLumberjack.DDLog = .sharedInstance) {
+    _DDLogMessage(message(),
+                  level: level,
+                  flag: .debug,
+                  context: context,
+                  file: file,
+                  function: function,
+                  line: line,
+                  tag: tag,
+                  asynchronous: async,
+                  ddlog: ddlog)
+}
+#endif
+#if compiler(>=5.3) && $NonescapableTypes
+@available(*, deprecated, message: "Use an interpolated DDLogMessageFormat instead")
+@inlinable @_disfavoredOverload public func DDLogInfo(_ message: @autoclosure () -> Any, level: CocoaLumberjack.DDLogLevel = DDDefaultLogLevel, context: Swift.Int = 0, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line, tag: Any? = nil, asynchronous async: Swift.Bool? = nil, ddlog: CocoaLumberjack.DDLog = .sharedInstance) {
+    _DDLogMessage(message(),
+                  level: level,
+                  flag: .info,
+                  context: context,
+                  file: file,
+                  function: function,
+                  line: line,
+                  tag: tag,
+                  asynchronous: async,
+                  ddlog: ddlog)
+}
+#endif
+#if compiler(>=5.3) && $NonescapableTypes
+@available(*, deprecated, message: "Use an interpolated DDLogMessageFormat instead")
+@inlinable @_disfavoredOverload public func DDLogWarn(_ message: @autoclosure () -> Any, level: CocoaLumberjack.DDLogLevel = DDDefaultLogLevel, context: Swift.Int = 0, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line, tag: Any? = nil, asynchronous async: Swift.Bool? = nil, ddlog: CocoaLumberjack.DDLog = .sharedInstance) {
+    _DDLogMessage(message(),
+                  level: level,
+                  flag: .warning,
+                  context: context,
+                  file: file,
+                  function: function,
+                  line: line,
+                  tag: tag,
+                  asynchronous: async,
+                  ddlog: ddlog)
+}
+#endif
+#if compiler(>=5.3) && $NonescapableTypes
+@available(*, deprecated, message: "Use an interpolated DDLogMessageFormat instead")
+@inlinable @_disfavoredOverload public func DDLogVerbose(_ message: @autoclosure () -> Any, level: CocoaLumberjack.DDLogLevel = DDDefaultLogLevel, context: Swift.Int = 0, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line, tag: Any? = nil, asynchronous async: Swift.Bool? = nil, ddlog: CocoaLumberjack.DDLog = .sharedInstance) {
+    _DDLogMessage(message(),
+                  level: level,
+                  flag: .verbose,
+                  context: context,
+                  file: file,
+                  function: function,
+                  line: line,
+                  tag: tag,
+                  asynchronous: async,
+                  ddlog: ddlog)
+}
+#endif
+#if compiler(>=5.3) && $NonescapableTypes
+@available(*, deprecated, message: "Use an interpolated DDLogMessageFormat instead")
+@inlinable @_disfavoredOverload public func DDLogError(_ message: @autoclosure () -> Any, level: CocoaLumberjack.DDLogLevel = DDDefaultLogLevel, context: Swift.Int = 0, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line, tag: Any? = nil, asynchronous async: Swift.Bool? = nil, ddlog: CocoaLumberjack.DDLog = .sharedInstance) {
+    _DDLogMessage(message(),
+                  level: level,
+                  flag: .error,
+                  context: context,
+                  file: file,
+                  function: function,
+                  line: line,
+                  tag: tag,
+                  asynchronous: async ?? false,
+                  ddlog: ddlog)
+}
+#endif
+@available(macOS 15, iOS 18, tvOS 18, watchOS 11, visionOS 2, *)
+extension CocoaLumberjack.DDLogLevel : Synchronization.AtomicRepresentable {
+}
+nonisolated(unsafe) public var dynamicLogLevel: CocoaLumberjack.DDLogLevel {
+  get
+  set
+}
+@inlinable public func resetDynamicLogLevel() {
+#if compiler(>=6.2)
+    dynamicLogLevel = .all
+#else
+    dynamicLogLevel = .all
+#endif
+}
+@available(*, deprecated, renamed: "dynamicLogLevel", message: "Please use dynamicLogLevel")
+public var defaultDebugLevel: CocoaLumberjack.DDLogLevel {
+  get
+  set
+}
+@available(*, deprecated, renamed: "resetDynamicLogLevel", message: "Please use resetDynamicLogLevel")
+public func resetDefaultDebugLevel()
+nonisolated(unsafe) public var asyncLoggingEnabled: Swift.Bool {
+  get
+  set
+}
+public func currentFileName(_ fileName: Swift.StaticString = #file) -> Swift.String
+@available(*, deprecated, renamed: "currentFileName", message: "Please use currentFileName")
+public func CurrentFileName(_ fileName: Swift.StaticString = #file) -> Swift.String
+#if compiler(>=5.3) && $NonescapableTypes
+@inlinable public func DDAssert(_ condition: @autoclosure () -> Swift.Bool, _ message: @autoclosure () -> CocoaLumberjack.DDLogMessageFormat = "", level: CocoaLumberjack.DDLogLevel = DDDefaultLogLevel, context: Swift.Int = 0, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line, tag: Any? = nil, asynchronous async: Swift.Bool? = nil, ddlog: CocoaLumberjack.DDLog = DDLog.sharedInstance) {
+    if !condition() {
+        DDLogError(message(),
+                   level: level,
+                   context: context,
+                   file: file,
+                   function: function,
+                   line: line,
+                   tag: tag,
+                   asynchronous: async,
+                   ddlog: ddlog)
+        Swift.assertionFailure(message().formatted, file: file, line: line)
+    }
+}
+#endif
+#if compiler(>=5.3) && $NonescapableTypes
+@inlinable public func DDAssertionFailure(_ message: @autoclosure () -> CocoaLumberjack.DDLogMessageFormat = "", level: CocoaLumberjack.DDLogLevel = DDDefaultLogLevel, context: Swift.Int = 0, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line, tag: Any? = nil, asynchronous async: Swift.Bool? = nil, ddlog: CocoaLumberjack.DDLog = DDLog.sharedInstance) {
+    DDLogError(message(),
+               level: level,
+               context: context,
+               file: file,
+               function: function,
+               line: line,
+               tag: tag,
+               asynchronous: async,
+               ddlog: ddlog)
+    Swift.assertionFailure(message().formatted, file: file, line: line)
+}
+#endif
+#if compiler(>=5.3) && $NonescapableTypes
+@available(*, deprecated, message: "Use an interpolated message.")
+@inlinable public func DDAssert(_ condition: @autoclosure () -> Swift.Bool, _ message: @autoclosure () -> Swift.String = "", level: CocoaLumberjack.DDLogLevel = DDDefaultLogLevel, context: Swift.Int = 0, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line, tag: Any? = nil, asynchronous async: Swift.Bool? = nil, ddlog: CocoaLumberjack.DDLog = DDLog.sharedInstance) {
+    if !condition() {
+        DDLogError(message(),
+                   level: level,
+                   context: context,
+                   file: file,
+                   function: function,
+                   line: line,
+                   tag: tag,
+                   asynchronous: async,
+                   ddlog: ddlog)
+        Swift.assertionFailure(message(), file: file, line: line)
+    }
+}
+#endif
+#if compiler(>=5.3) && $NonescapableTypes
+@available(*, deprecated, message: "Use an interpolated message.")
+@inlinable public func DDAssertionFailure(_ message: @autoclosure () -> Swift.String = "", level: CocoaLumberjack.DDLogLevel = DDDefaultLogLevel, context: Swift.Int = 0, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line, tag: Any? = nil, asynchronous async: Swift.Bool? = nil, ddlog: CocoaLumberjack.DDLog = DDLog.sharedInstance) {
+    DDLogError(message(),
+               level: level,
+               context: context,
+               file: file,
+               function: function,
+               line: line,
+               tag: tag,
+               asynchronous: async,
+               ddlog: ddlog)
+    Swift.assertionFailure(message(), file: file, line: line)
+}
+#endif
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension CocoaLumberjack.DDLog {
+  @available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+  public struct MessagePublisher : Combine.Publisher {
+    public typealias Output = CocoaLumberjack.DDLogMessage
+    public typealias Failure = Swift.Never
+    public init(log: CocoaLumberjack.DDLog, with logLevel: CocoaLumberjack.DDLogLevel)
+    public func receive<S>(subscriber: S) where S : Combine.Subscriber, S.Failure == Swift.Never, S.Input == CocoaLumberjack.DDLogMessage
+  }
+  public func messagePublisher(with logLevel: CocoaLumberjack.DDLogLevel = .all) -> CocoaLumberjack.DDLog.MessagePublisher
+}
+@available(macOS 10.15, iOS 13.0, tvOS 13.0, watchOS 6.0, *)
+extension Combine.Publisher where Self.Output == CocoaLumberjack.DDLogMessage {
+  public func formatted(with formatter: any CocoaLumberjack.DDLogFormatter) -> Combine.Publishers.CompactMap<Self, Swift.String>
+}
+extension CocoaLumberjack.DDLogFlag {
+  public static func from(_ logLevel: CocoaLumberjack.DDLogLevel) -> CocoaLumberjack.DDLogFlag
+  public init(_ logLevel: CocoaLumberjack.DDLogLevel)
+  public func toLogLevel() -> CocoaLumberjack.DDLogLevel
+}
+@frozen public struct DDLogMessageFormat : Swift.ExpressibleByStringInterpolation {
+  public typealias StringLiteralType = Swift.String
+  @usableFromInline
+  internal struct Storage {
+    @usableFromInline
+    internal typealias VArg = any Swift.CVarArg
+    @usableFromInline
+    internal let requiresArgumentParsing: Swift.Bool
+    @usableFromInline
+    internal var format: Swift.String
+    @usableFromInline
+    internal var args: Swift.Array<CocoaLumberjack.DDLogMessageFormat.Storage.VArg> {
+      get
+      set
+    }
+    @usableFromInline
+    internal init(requiresArgumentParsing: Swift.Bool, format: Swift.String, args: Swift.Array<CocoaLumberjack.DDLogMessageFormat.Storage.VArg>)
+    @available(*, deprecated, message: "Use initializer specifying the need for argument parsing: init(requiresArgumentParsing:format:args:)")
+    @usableFromInline
+    internal init(format: Swift.String, args: Swift.Array<CocoaLumberjack.DDLogMessageFormat.Storage.VArg>)
+    @usableFromInline
+    internal mutating func addString(_ string: Swift.String)
+    @inlinable internal mutating func addValue(_ arg: CocoaLumberjack.DDLogMessageFormat.Storage.VArg, withSpecifier specifier: Swift.String) {
+            format.append(specifier)
+            args.append(arg)
+        }
+  }
+  @frozen public struct StringInterpolation : Swift.StringInterpolationProtocol {
+    @usableFromInline
+    internal var storage: CocoaLumberjack.DDLogMessageFormat.Storage
+    @inlinable public init(literalCapacity: Swift.Int, interpolationCount: Swift.Int) {
+            var format = String()
+            format.reserveCapacity(literalCapacity)
+            var args = Array<Storage.VArg>()
+            args.reserveCapacity(interpolationCount)
+            storage = .init(requiresArgumentParsing: true, format: format, args: args)
+        }
+    @inlinable public mutating func appendLiteral(_ literal: CocoaLumberjack.DDLogMessageFormat.StringLiteralType) {
+            storage.addString(literal)
+        }
+    @inlinable public mutating func appendInterpolation<S>(_ string: S) where S : Swift.StringProtocol {
+            storage.addValue(String(string), withSpecifier: "%@")
+        }
+    #if compiler(>=5.3) && $NonescapableTypes
+    @inlinable public mutating func appendInterpolation<S>(_ string: S?, default: @autoclosure () -> some StringProtocol) where S : Swift.StringProtocol {
+            if let string {
+                appendInterpolation(string)
+            } else {
+                appendInterpolation(`default`())
+            }
+        }
+    #endif
+    @inlinable public mutating func appendInterpolation(_ int: Swift.Int8) {
+            storage.addValue(int, withSpecifier: "%c")
+        }
+    #if compiler(>=5.3) && $NonescapableTypes
+    @inlinable public mutating func appendInterpolation(_ int: Swift.Int8?, default: @autoclosure () -> some StringProtocol) {
+            if let int {
+                appendInterpolation(int)
+            } else {
+                appendInterpolation(`default`())
+            }
+        }
+    #endif
+    @inlinable public mutating func appendInterpolation(_ int: Swift.UInt8) {
+            storage.addValue(int, withSpecifier: "%c")
+        }
+    #if compiler(>=5.3) && $NonescapableTypes
+    @inlinable public mutating func appendInterpolation(_ int: Swift.UInt8?, default: @autoclosure () -> some StringProtocol) {
+            if let int {
+                appendInterpolation(int)
+            } else {
+                appendInterpolation(`default`())
+            }
+        }
+    #endif
+    @inlinable public mutating func appendInterpolation(_ int: Swift.Int16) {
+            storage.addValue(int, withSpecifier: "%i")
+        }
+    #if compiler(>=5.3) && $NonescapableTypes
+    @inlinable public mutating func appendInterpolation(_ int: Swift.Int16?, default: @autoclosure () -> some StringProtocol) {
+            if let int {
+                appendInterpolation(int)
+            } else {
+                appendInterpolation(`default`())
+            }
+        }
+    #endif
+    @inlinable public mutating func appendInterpolation(_ int: Swift.UInt16) {
+            storage.addValue(int, withSpecifier: "%u")
+        }
+    #if compiler(>=5.3) && $NonescapableTypes
+    @inlinable public mutating func appendInterpolation(_ int: Swift.UInt16?, default: @autoclosure () -> some StringProtocol) {
+            if let int {
+                appendInterpolation(int)
+            } else {
+                appendInterpolation(`default`())
+            }
+        }
+    #endif
+    @inlinable public mutating func appendInterpolation(_ int: Swift.Int32) {
+            storage.addValue(int, withSpecifier: "%li")
+        }
+    #if compiler(>=5.3) && $NonescapableTypes
+    @inlinable public mutating func appendInterpolation(_ int: Swift.Int32?, default: @autoclosure () -> some StringProtocol) {
+            if let int {
+                appendInterpolation(int)
+            } else {
+                appendInterpolation(`default`())
+            }
+        }
+    #endif
+    @inlinable public mutating func appendInterpolation(_ int: Swift.UInt32) {
+            storage.addValue(int, withSpecifier: "%lu")
+        }
+    #if compiler(>=5.3) && $NonescapableTypes
+    @inlinable public mutating func appendInterpolation(_ int: Swift.UInt32?, default: @autoclosure () -> some StringProtocol) {
+            if let int {
+                appendInterpolation(int)
+            } else {
+                appendInterpolation(`default`())
+            }
+        }
+    #endif
+    @inlinable public mutating func appendInterpolation(_ int: Swift.Int64) {
+            storage.addValue(int, withSpecifier: "%lli")
+        }
+    #if compiler(>=5.3) && $NonescapableTypes
+    @inlinable public mutating func appendInterpolation(_ int: Swift.Int64?, default: @autoclosure () -> some StringProtocol) {
+            if let int {
+                appendInterpolation(int)
+            } else {
+                appendInterpolation(`default`())
+            }
+        }
+    #endif
+    @inlinable public mutating func appendInterpolation(_ int: Swift.UInt64) {
+            storage.addValue(int, withSpecifier: "%llu")
+        }
+    #if compiler(>=5.3) && $NonescapableTypes
+    @inlinable public mutating func appendInterpolation(_ int: Swift.UInt64?, default: @autoclosure () -> some StringProtocol) {
+            if let int {
+                appendInterpolation(int)
+            } else {
+                appendInterpolation(`default`())
+            }
+        }
+    #endif
+    @inlinable public mutating func appendInterpolation(_ int: Swift.Int) {
+            storage.addValue(int, withSpecifier: "%lli")
+        }
+    #if compiler(>=5.3) && $NonescapableTypes
+    @inlinable public mutating func appendInterpolation(_ int: Swift.Int?, default: @autoclosure () -> some StringProtocol) {
+            if let int {
+                appendInterpolation(int)
+            } else {
+                appendInterpolation(`default`())
+            }
+        }
+    #endif
+    @inlinable public mutating func appendInterpolation(_ int: Swift.UInt) {
+            storage.addValue(int, withSpecifier: "%llu")
+        }
+    #if compiler(>=5.3) && $NonescapableTypes
+    @inlinable public mutating func appendInterpolation(_ int: Swift.UInt?, default: @autoclosure () -> some StringProtocol) {
+            if let int {
+                appendInterpolation(int)
+            } else {
+                appendInterpolation(`default`())
+            }
+        }
+    #endif
+    @inlinable public mutating func appendInterpolation(_ flt: Swift.Float) {
+            storage.addValue(flt, withSpecifier: "%f")
+        }
+    #if compiler(>=5.3) && $NonescapableTypes
+    @inlinable public mutating func appendInterpolation(_ flt: Swift.Float?, default: @autoclosure () -> some StringProtocol) {
+            if let flt {
+                appendInterpolation(flt)
+            } else {
+                appendInterpolation(`default`())
+            }
+        }
+    #endif
+    @inlinable public mutating func appendInterpolation(_ dbl: Swift.Double) {
+            storage.addValue(dbl, withSpecifier: "%lf")
+        }
+    #if compiler(>=5.3) && $NonescapableTypes
+    @inlinable public mutating func appendInterpolation(_ dbl: Swift.Double?, default: @autoclosure () -> some StringProtocol) {
+            if let dbl {
+                appendInterpolation(dbl)
+            } else {
+                appendInterpolation(`default`())
+            }
+        }
+    #endif
+    @inlinable public mutating func appendInterpolation(_ bool: Swift.Bool) {
+            storage.addValue(bool, withSpecifier: "%i")  
+        }
+    #if compiler(>=5.3) && $NonescapableTypes
+    @inlinable public mutating func appendInterpolation(_ bool: Swift.Bool?, default: @autoclosure () -> some StringProtocol) {
+            if let bool {
+                appendInterpolation(bool)
+            } else {
+                appendInterpolation(`default`())
+            }
+        }
+    #endif
+    @usableFromInline
+    internal func _warnReferenceConvertibleCVarArgInterpolation<Convertible>(_ convertible: Convertible) where Convertible : Foundation.ReferenceConvertible
+    @inlinable public mutating func appendInterpolation<Convertible>(_ convertible: Convertible) where Convertible : Foundation.ReferenceConvertible {
+            if convertible is Storage.VArg {
+               _warnReferenceConvertibleCVarArgInterpolation(convertible)
+            }
+             
+             
+            storage.addValue(convertible as? Storage.VArg ?? convertible as! Convertible.ReferenceType, withSpecifier: "%@")
+        }
+    #if compiler(>=5.3) && $NonescapableTypes
+    @inlinable public mutating func appendInterpolation<Convertible>(_ convertible: Convertible?, default: @autoclosure () -> some StringProtocol) where Convertible : Foundation.ReferenceConvertible {
+            if let convertible {
+                appendInterpolation(convertible)
+            } else {
+                appendInterpolation(`default`())
+            }
+        }
+    #endif
+    @inlinable public mutating func appendInterpolation<Obj>(_ object: Obj) where Obj : ObjectiveC.NSObject {
+            storage.addValue(object, withSpecifier: "%@")
+        }
+    #if compiler(>=5.3) && $NonescapableTypes
+    @inlinable public mutating func appendInterpolation<Obj>(_ object: Obj?, default: @autoclosure () -> some StringProtocol) where Obj : ObjectiveC.NSObject {
+            if let object {
+                appendInterpolation(object)
+            } else {
+                appendInterpolation(`default`())
+            }
+        }
+    #endif
+    @_disfavoredOverload public mutating func appendInterpolation(_ any: Any)
+    public typealias StringLiteralType = CocoaLumberjack.DDLogMessageFormat.StringLiteralType
+  }
+  @usableFromInline
+  internal let storage: CocoaLumberjack.DDLogMessageFormat.Storage
+  @inlinable internal var format: Swift.String {
+    get { storage.format }
+  }
+  @inlinable internal var args: Swift.Array<CocoaLumberjack.DDLogMessageFormat.Storage.VArg> {
+    get { storage.args }
+  }
+  @inlinable internal var formatted: Swift.String {
+    get {
+        guard storage.requiresArgumentParsing else { return storage.format }
+#if compiler(>=6.2)
+        return String(format: storage.format, arguments: storage.args)
+#else
+        return String(format: storage.format, arguments: storage.args)
+#endif
+    }
+  }
+  @inlinable public init(stringLiteral value: CocoaLumberjack.DDLogMessageFormat.StringLiteralType) {
+        storage = .init(requiresArgumentParsing: false, format: value, args: [])
+    }
+  @inlinable public init(stringInterpolation: CocoaLumberjack.DDLogMessageFormat.StringInterpolation) {
+        storage = stringInterpolation.storage
+    }
+  @inlinable internal init(_formattedMessage: Swift.String) {
+        storage = .init(requiresArgumentParsing: false, format: _formattedMessage, args: [])
+    }
+  public typealias ExtendedGraphemeClusterLiteralType = CocoaLumberjack.DDLogMessageFormat.StringLiteralType
+  public typealias UnicodeScalarLiteralType = CocoaLumberjack.DDLogMessageFormat.StringLiteralType
+}
+extension CocoaLumberjack.DDLogMessage {
+  #if compiler(>=5.3) && $NonescapableTypes
+  @inlinable convenience public init(_ format: CocoaLumberjack.DDLogMessageFormat, level: CocoaLumberjack.DDLogLevel, flag: CocoaLumberjack.DDLogFlag, context: Swift.Int = 0, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line, tag: Any? = nil, timestamp: Foundation.Date? = nil) {
+        self.init(format: format.format,
+                  formatted: format.formatted,
+                  level: level,
+                  flag: flag,
+                  context: context,
+                  file: String(describing: file),
+                  function: String(describing: function),
+                  line: line,
+                  tag: tag,
+                  options: [.dontCopyMessage],
+                  timestamp: timestamp)
+    }
+  #endif
+}

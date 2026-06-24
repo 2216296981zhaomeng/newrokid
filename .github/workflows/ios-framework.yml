@@ -1,0 +1,54 @@
+name: Build iOS Framework
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-ios-framework:
+    name: Build Rokid iOS plugin framework
+    runs-on: macos-26
+    env:
+      IOS_DEPLOYMENT_TARGET: "16.0"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Show Apple toolchain
+        run: |
+          xcodebuild -version
+          xcrun swiftc --version
+
+      - name: Verify SDK dependency frameworks
+        run: |
+          test -d ios/RGCxrClient.framework
+          test -d ios/RGCoreKit.framework
+          test -d ios/CocoaLumberjack.framework
+          test -f ios/RGCxrClient.framework/RGCxrClient
+          test -f ios/RGCoreKit.framework/RGCoreKit
+          test -f ios/CocoaLumberjack.framework/CocoaLumberjack
+
+      - name: Build wrapper framework
+        run: |
+          chmod +x tools/ios/build_ios_uni_plugin_framework.sh
+          tools/ios/build_ios_uni_plugin_framework.sh
+
+      - name: Package DCloud native plugin
+        run: |
+          chmod +x tools/ios/package_ios_native_plugin.sh
+          tools/ios/package_ios_native_plugin.sh
+
+      - name: Upload iOS artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rokid-Glass-iOS-${{ github.run_number }}
+          if-no-files-found: error
+          path: |
+            ios/RokidCXRLUniPlugin.framework
+            ios/RGCxrClient.framework
+            ios/RGCoreKit.framework
+            ios/CocoaLumberjack.framework
+            dist/Rokid-Glass-ios-nativeplugin.zip

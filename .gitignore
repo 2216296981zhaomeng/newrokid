@@ -1,0 +1,10 @@
+.DS_Store
+build/
+dist/
+DerivedData/
+Pods/
+*.xcuserstate
+*.xcuserdata/
+
+# Built by GitHub Actions from ios/Classes sources.
+ios/RokidCXRLUniPlugin.framework/

@@ -1,0 +1,11 @@
+framework module RGCoreKit {
+  umbrella header "RGCoreKit-umbrella.h"
+
+  export *
+  module * { export * }
+}
+
+module RGCoreKit.Swift {
+  header "RGCoreKit-Swift.h"
+  requires objc
+}

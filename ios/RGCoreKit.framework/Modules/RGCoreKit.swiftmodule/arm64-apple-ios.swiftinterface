@@ -1,0 +1,493 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 6.2.4 effective-5.10 (swiftlang-6.2.4.1.4 clang-1700.6.4.2)
+// swift-module-flags: -target arm64-apple-ios13.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-experimental-feature DebugDescriptionMacro -enable-bare-slash-regex -module-name RGCoreKit
+// swift-module-flags-ignorable: -no-verify-emitted-module-interface -formal-cxx-interoperability-mode=off -interface-compiler-version 6.2.4
+import CommonCrypto
+import Foundation
+@_exported import RGCoreKit
+import Swift
+import SystemConfiguration
+import UIKit
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+extension Swift.Array {
+  #if compiler(>=5.3) && $NonescapableTypes
+  public subscript(safe index: Swift.Int) -> Element? {
+    get
+  }
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func toString(prettyPrinted: Swift.Bool = false) -> Swift.String?
+  #endif
+}
+extension Swift.Array where Element : Swift.Equatable {
+  public mutating func remove(first element: Element)
+}
+extension Swift.Array where Element : Swift.Hashable {
+  public func elementsEqualIgnoringOrder(_ other: [Element]) -> Swift.Bool
+  public func elementsEqualIgnoringOrderAndDuplicates(_ other: [Element]) -> Swift.Bool
+}
+extension Foundation.NSAttributedString {
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func createHighlightedString(fullString: Swift.String, subStrings: [Swift.String], linkKeys: [Swift.String]? = nil, underlineKeys: [Swift.String]? = nil, font: UIKit.UIFont, baseColor: UIKit.UIColor = .black, highlightColor: UIKit.UIColor = .blue, highlightAllMatches: Swift.Bool = false) -> Foundation.NSMutableAttributedString
+  #endif
+}
+extension Foundation.NSAttributedString {
+  public func height(withWidth width: CoreFoundation.CGFloat) -> CoreFoundation.CGFloat
+  public func width(withHeight height: CoreFoundation.CGFloat) -> CoreFoundation.CGFloat
+}
+extension Foundation.Data {
+  public func isLargerThan(kilobytes kb: Swift.Int) -> Swift.Bool
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func convertTo<T>() -> T?
+  #endif
+}
+extension Foundation.Date {
+  public func isBeforeDay(_ date: Foundation.Date) -> Swift.Bool
+  public func isAfterDay(_ date: Foundation.Date) -> Swift.Bool
+  public func formattedString(format: Swift.String = "yyyy-MM-dd HH:mm:ss") -> Swift.String
+  public func time(type: RGCoreKit.FormatterType) -> Swift.String
+  public func isSameDay(with date: Foundation.Date) -> Swift.Bool
+  public func weekDay(with names: [Swift.String]) -> Swift.String
+  public func yearsAgo(_ years: Swift.Int) -> Foundation.Date
+}
+extension Swift.Dictionary {
+  public func has(key: Key) -> Swift.Bool
+}
+extension Swift.Dictionary {
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func toJsonData(options: Foundation.JSONSerialization.WritingOptions = []) -> Foundation.Data?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func toJsonString(prettyPrint: Swift.Bool = false) -> Swift.String?
+  #endif
+}
+extension Swift.Dictionary {
+  public func union(values: Swift.Dictionary<Key, Value>...) -> Swift.Dictionary<Key, Value>
+  public mutating func merge<K, V>(with dictionaries: [K : V]...) where K : Swift.Hashable
+}
+extension Swift.Dictionary where Value : Swift.Equatable {
+  public func difference(with dictionaries: [Key : Value]...) -> [Key : Value]
+}
+extension Swift.Encodable {
+  public func toDictionary() throws -> [Swift.String : Any]
+}
+public struct Navigator {
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func currentVC() -> UIKit.UIViewController?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func currentNavigationVC() -> UIKit.UINavigationController?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func push(_ targetVC: UIKit.UIViewController?, animated: Swift.Bool = true)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func present(_ targetVC: UIKit.UIViewController?, animated: Swift.Bool)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func present(_ targetVC: UIKit.UIViewController?, animated: Swift.Bool = true, completion: (() -> Swift.Void)? = nil)
+  #endif
+  public static func pop(_ withTimes: Swift.Int, animated: Swift.Bool)
+  public static func popToRootVC(animated: Swift.Bool)
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func dismissVC(_ withTimes: Swift.Int, animated: Swift.Bool, completion: (() -> Swift.Void)?)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func dismissToRoot(animated: Swift.Bool, completion: (() -> Swift.Void)? = nil)
+  #endif
+}
+extension Foundation.NSPointerArray {
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func addWeakObject<T>(_ object: T?) where T : ObjectiveC.NSObjectProtocol
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func removeWeakObject<T>(_ object: T?) where T : ObjectiveC.NSObjectProtocol
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func forEachWeakObject<T>(_ block: (T?) -> Swift.Void) where T : ObjectiveC.NSObjectProtocol
+  #endif
+}
+public enum ReachabilityError : Swift.Error {
+  case failedToCreateWithAddress(Darwin.sockaddr, Swift.Int32)
+  case failedToCreateWithHostname(Swift.String, Swift.Int32)
+  case unableToSetCallback(Swift.Int32)
+  case unableToSetDispatchQueue(Swift.Int32)
+  case unableToGetFlags(Swift.Int32)
+}
+@available(*, unavailable, renamed: "Notification.Name.reachabilityChanged")
+public let ReachabilityChangedNotification: Foundation.NSNotification.Name
+extension Foundation.NSNotification.Name {
+  public static let reachabilityChanged: Foundation.Notification.Name
+}
+public class Reachability {
+  public typealias NetworkReachable = (RGCoreKit.Reachability) -> ()
+  public typealias NetworkUnreachable = (RGCoreKit.Reachability) -> ()
+  @available(*, unavailable, renamed: "Connection")
+  public enum NetworkStatus : Swift.CustomStringConvertible {
+    case notReachable, reachableViaWiFi, reachableViaWWAN
+    public var description: Swift.String {
+      get
+    }
+    public static func == (a: RGCoreKit.Reachability.NetworkStatus, b: RGCoreKit.Reachability.NetworkStatus) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public enum Connection : Swift.CustomStringConvertible {
+    case unavailable, wifi, cellular
+    public var description: Swift.String {
+      get
+    }
+    @available(*, deprecated, renamed: "unavailable")
+    public static let none: RGCoreKit.Reachability.Connection
+    public static func == (a: RGCoreKit.Reachability.Connection, b: RGCoreKit.Reachability.Connection) -> Swift.Bool
+    public func hash(into hasher: inout Swift.Hasher)
+    public var hashValue: Swift.Int {
+      get
+    }
+  }
+  public var whenReachable: RGCoreKit.Reachability.NetworkReachable?
+  public var whenUnreachable: RGCoreKit.Reachability.NetworkUnreachable?
+  @available(*, deprecated, renamed: "allowsCellularConnection")
+  final public let reachableOnWWAN: Swift.Bool
+  public var allowsCellularConnection: Swift.Bool
+  public var notificationCenter: Foundation.NotificationCenter
+  @available(*, deprecated, renamed: "connection.description")
+  public var currentReachabilityString: Swift.String {
+    get
+  }
+  @available(*, unavailable, renamed: "connection")
+  public var currentReachabilityStatus: RGCoreKit.Reachability.Connection {
+    get
+  }
+  public var connection: RGCoreKit.Reachability.Connection {
+    get
+  }
+  #if compiler(>=5.3) && $NonescapableTypes
+  required public init(reachabilityRef: SystemConfiguration.SCNetworkReachability, queueQoS: Dispatch.DispatchQoS = .default, targetQueue: Dispatch.DispatchQueue? = nil, notificationQueue: Dispatch.DispatchQueue? = .main)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  convenience public init(hostname: Swift.String, queueQoS: Dispatch.DispatchQoS = .default, targetQueue: Dispatch.DispatchQueue? = nil, notificationQueue: Dispatch.DispatchQueue? = .main) throws
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  convenience public init(queueQoS: Dispatch.DispatchQoS = .default, targetQueue: Dispatch.DispatchQueue? = nil, notificationQueue: Dispatch.DispatchQueue? = .main) throws
+  #endif
+  @objc deinit
+}
+extension RGCoreKit.Reachability {
+  public func startNotifier() throws
+  public func stopNotifier()
+  @available(*, deprecated, message: "Please use `connection != .none`")
+  public var isReachable: Swift.Bool {
+    get
+  }
+  @available(*, deprecated, message: "Please use `connection == .cellular`")
+  public var isReachableViaWWAN: Swift.Bool {
+    get
+  }
+  @available(*, deprecated, message: "Please use `connection == .wifi`")
+  public var isReachableViaWiFi: Swift.Bool {
+    get
+  }
+  public var description: Swift.String {
+    get
+  }
+}
+public struct RGApplication {
+  public static var documentPath: Swift.String {
+    get
+  }
+  public static var documentUrl: Foundation.URL {
+    get
+  }
+  public static var cachePath: Swift.String {
+    get
+  }
+  public static var cacheUrl: Foundation.URL {
+    get
+  }
+  public static var libraryPath: Swift.String {
+    get
+  }
+  public static var libraryUrl: Foundation.URL {
+    get
+  }
+  public static var bundleName: Swift.String {
+    get
+  }
+  public static var bundleId: Swift.String {
+    get
+  }
+  public static var version: Swift.String {
+    get
+  }
+  public static var buildVersion: Swift.String {
+    get
+  }
+}
+@objc @_inheritsConvenienceInitializers public class RGFilePathUtil : ObjectiveC.NSObject {
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func getDocumentPath() -> Swift.String?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func getDirectoryForDocuments(dir: Swift.String) -> Swift.String?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func getAbsolutePath(withFileRelativePath fileRelativePath: Swift.String?) -> Swift.String?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func getRelativePath(withFileAbsolutePath fileAbsolutePath: Swift.String?) -> Swift.String?
+  #endif
+  @objc override dynamic public init()
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers public class RGIDs : ObjectiveC.NSObject {
+  public class func getDeviceId() -> Swift.String
+  public class func getProgressId() -> Swift.String
+  public class func getLongProgressId() -> Swift.Int
+  @objc override dynamic public init()
+  @objc deinit
+}
+#if compiler(>=5.3) && $NonescapableTypes
+public func makeNSError(code: Swift.Int, message: Swift.String?) -> Foundation.NSError
+#endif
+@_hasMissingDesignatedInitializers public class RGLog {
+  public static func setup(_ release: Swift.Bool)
+  public static func addSensitive(_ str: Swift.String)
+  public static func removeSensitive(_ str: Swift.String)
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func api(_ params: Any? = nil, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func info(_ params: Any? = nil, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func verbose(_ params: Any? = nil, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func debug(_ params: Any? = nil, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func warn(_ params: Any? = nil, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func error(_ params: Any? = nil, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line)
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func callback(_ params: Any? = nil, succ: Swift.Bool, error: Foundation.NSError? = nil, file: Swift.StaticString = #file, function: Swift.StaticString = #function, line: Swift.UInt = #line)
+  #endif
+  @objc deinit
+}
+public protocol RGTypeWrapper {
+  associatedtype TargetType
+  var base: Self.TargetType { get }
+  init(_ base: Self.TargetType)
+}
+public struct RGNameSpace<Base> : RGCoreKit.RGTypeWrapper {
+  public var base: Base
+  public init(_ base: Base)
+  public typealias TargetType = Base
+}
+public protocol RGNameSpaceWrappable {
+  associatedtype TargetType
+  var rokid: Self.TargetType { get set }
+  static var rokid: Self.TargetType.Type { get set }
+}
+extension RGCoreKit.RGNameSpaceWrappable {
+  public var rokid: RGCoreKit.RGNameSpace<Self> {
+    get
+    set
+  }
+  public static var rokid: RGCoreKit.RGNameSpace<Self>.Type {
+    get
+    set
+  }
+}
+public enum RGNetworkConnection : Swift.String {
+  case wifi
+  case cellular
+  case unavailable
+  #if compiler(>=5.3) && $NonescapableTypes
+  public init?(rawValue: Swift.String)
+  #endif
+  public typealias RawValue = Swift.String
+  public var rawValue: Swift.String {
+    get
+  }
+}
+public protocol RGNetworkDelegate : ObjectiveC.NSObjectProtocol {
+  func onNetworkChanged(_ isReachable: Swift.Bool)
+}
+@objc @_inheritsConvenienceInitializers public class RGNetwork : ObjectiveC.NSObject {
+  public static let shared: RGCoreKit.RGNetwork
+  public var isReachable: Swift.Bool {
+    get
+  }
+  public var connection: RGCoreKit.RGNetworkConnection {
+    get
+  }
+  @objc override dynamic public init()
+  public func addDelegate(_ delegate: any RGCoreKit.RGNetworkDelegate)
+  public func removeDelegate(_ delegate: any RGCoreKit.RGNetworkDelegate)
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func getLocalIPAddress() -> Swift.String?
+  #endif
+  @objc deinit
+}
+@objc public class RGThread : ObjectiveC.NSObject {
+  public init(_ name: Swift.String)
+  public func execute(_ task: @escaping () -> Swift.Void)
+  @objc deinit
+}
+public class RGTimer {
+  public init()
+  public func start(interval: Foundation.TimeInterval, queue: Dispatch.DispatchQueue = .main, repeats: Swift.Bool = true, immediate: Swift.Bool = true, handler: @escaping () -> Swift.Void)
+  public func stop()
+  @objc deinit
+}
+#if compiler(>=5.3) && $NonescapableTypes
+extension Swift.Optional where Wrapped == Swift.String {
+  public var isNotEmpty: Swift.Bool {
+    get
+  }
+  public var isNilOrEmpty: Swift.Bool {
+    get
+  }
+}
+#endif
+extension Swift.String {
+  public var removeWhitespace: Swift.String {
+    get
+  }
+  public var removeAllWhitespace: Swift.String {
+    get
+  }
+}
+extension Swift.String {
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func convertTo<T>() -> T?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func safeSubstring(from start: Swift.Int, length: Swift.Int? = nil) -> Swift.String?
+  #endif
+}
+public enum FormatterType {
+  case `default`
+  case point
+  case dash
+  case text
+  case onlyDate
+  case onlyDash
+  case onlyText
+  case month
+  case dashMonth
+  case textMonth
+  case hours
+  case second
+  public func formatter() -> Swift.String
+  public static func == (a: RGCoreKit.FormatterType, b: RGCoreKit.FormatterType) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension Swift.String {
+  public static func time(formatter string: Swift.String, timeInterval: Foundation.TimeInterval) -> Swift.String
+  public static func time(type: RGCoreKit.FormatterType, timeInterval: Foundation.TimeInterval) -> Swift.String
+  public static func time(formatter string: Swift.String, stamp interval: Swift.String) -> Swift.String
+  public static func currentTime(formatter type: RGCoreKit.FormatterType) -> Swift.String
+  public func time(formatter type: RGCoreKit.FormatterType = .default) -> Swift.String
+  public func timeStamp(_ type: RGCoreKit.FormatterType = .default) -> Foundation.TimeInterval
+  public func milliseconds(with type: RGCoreKit.FormatterType = .default) -> Foundation.TimeInterval
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func toDate(with type: RGCoreKit.FormatterType = .default) -> Foundation.Date?
+  #endif
+  public var weekDay: Swift.String {
+    get
+  }
+  #if compiler(>=5.3) && $NonescapableTypes
+  public static func getDateComponents(from timestamp: Foundation.TimeInterval?) -> (year: Swift.Int, month: Swift.Int, day: Swift.Int)?
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func getDateComponents() -> (year: Swift.Int, month: Swift.Int, day: Swift.Int)?
+  #endif
+}
+extension Swift.String {
+  public var md5: Swift.String {
+    get
+  }
+}
+extension Foundation.Data {
+  public var md5: Swift.String {
+    get
+  }
+}
+extension Swift.String {
+  public var isValidPhoneNumber: Swift.Bool {
+    get
+  }
+  public var isValidPassword: Swift.Bool {
+    get
+  }
+}
+extension Swift.String {
+  public func formatWithPositionalArguments(_ args: [Swift.String]) -> Swift.String
+}
+extension Swift.String {
+  public func width(withFont font: UIKit.UIFont) -> CoreFoundation.CGFloat
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func height(withFont font: UIKit.UIFont, maxWidth: CoreFoundation.CGFloat = .greatestFiniteMagnitude, lineHeight: CoreFoundation.CGFloat? = nil) -> CoreFoundation.CGFloat
+  #endif
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func size(withFont font: UIKit.UIFont, maxWidth: CoreFoundation.CGFloat = .greatestFiniteMagnitude, lineHeight: CoreFoundation.CGFloat? = nil) -> CoreFoundation.CGSize
+  #endif
+  public func height(withFont font: UIKit.UIFont, width: CoreFoundation.CGFloat, lineHeightMultiple: CoreFoundation.CGFloat = 1.0) -> CoreFoundation.CGFloat
+}
+extension Swift.String {
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func aesDecrypt(key: Swift.String) -> Swift.String?
+  #endif
+}
+extension Swift.String {
+  public func toAttributedString(font: UIKit.UIFont, textColor: UIKit.UIColor, lineHeightMultiple: CoreFoundation.CGFloat) -> Foundation.NSAttributedString
+  public func toAttributedString(font: UIKit.UIFont, textColor: UIKit.UIColor, lineHeight: CoreFoundation.CGFloat) -> Foundation.NSAttributedString
+}
+extension Swift.String {
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func parseLanguageTags() -> [Swift.String : Swift.String]?
+  #endif
+}
+extension Swift.String {
+  #if compiler(>=5.3) && $NonescapableTypes
+  public func toDictionary() -> [Swift.String : Any]?
+  #endif
+}
+extension Swift.String {
+  public func containsEmoji() -> Swift.Bool
+}
+extension Swift.String {
+  public var hasValidExtension: Swift.Bool {
+    get
+  }
+  public func withExtension(_ ext: Swift.String, onlyIfInvalid: Swift.Bool = true) -> Swift.String
+  public var withTxtExtension: Swift.String {
+    get
+  }
+  public var forceTxtExtension: Swift.String {
+    get
+  }
+}
+@available(*, unavailable, renamed: "Connection")
+extension RGCoreKit.Reachability.NetworkStatus : Swift.Equatable {}
+@available(*, unavailable, renamed: "Connection")
+extension RGCoreKit.Reachability.NetworkStatus : Swift.Hashable {}
+extension RGCoreKit.Reachability.Connection : Swift.Equatable {}
+extension RGCoreKit.Reachability.Connection : Swift.Hashable {}
+extension RGCoreKit.RGNetworkConnection : Swift.Equatable {}
+extension RGCoreKit.RGNetworkConnection : Swift.Hashable {}
+extension RGCoreKit.RGNetworkConnection : Swift.RawRepresentable {}
+extension RGCoreKit.FormatterType : Swift.Equatable {}
+extension RGCoreKit.FormatterType : Swift.Hashable {}

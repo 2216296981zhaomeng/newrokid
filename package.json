@@ -1,0 +1,68 @@
+{
+  "name": "Rokid-Glass",
+  "id": "Rokid-Glass",
+  "version": "1.0.13",
+  "description": "Rokid CXR-L native plugin for authorization, custom view teleprompter setup, and audio streaming.",
+  "_dp_type": "nativeplugin",
+  "_dp_nativeplugin": {
+    "ios": {
+      "plugins": [
+        {
+          "type": "module",
+          "name": "Rokid-Glass",
+          "class": "RokidCXRLModule"
+        }
+      ],
+      "integrateType": "framework",
+      "hooksClass": "RokidGlassPluginProxy",
+      "frameworks": [
+        "UIKit.framework",
+        "Foundation.framework",
+        "CoreBluetooth.framework",
+        "Network.framework",
+        "AVFoundation.framework",
+        "Combine.framework",
+        "RokidCXRLUniPlugin.framework",
+        "RGCxrClient.framework",
+        "RGCoreKit.framework",
+        "CocoaLumberjack.framework"
+      ],
+      "embedFrameworks": [
+        "RokidCXRLUniPlugin.framework",
+        "RGCxrClient.framework",
+        "RGCoreKit.framework",
+        "CocoaLumberjack.framework"
+      ],
+      "embedSwift": true,
+      "deploymentTarget": "16.0",
+      "validArchitectures": [
+        "arm64"
+      ],
+      "plists": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleTypeRole": "Editor",
+            "CFBundleURLName": "com.rokid.cxrl",
+            "CFBundleURLSchemes": [
+              "cxrl"
+            ]
+          }
+        ],
+        "LSApplicationQueriesSchemes": [
+          "rokidai"
+        ],
+        "UIBackgroundModes": [
+          "bluetooth-central"
+        ],
+        "NSBluetoothAlwaysUsageDescription": "This app uses Bluetooth to connect to Rokid AI glasses.",
+        "NSBluetoothPeripheralUsageDescription": "This app uses Bluetooth to connect to Rokid AI glasses.",
+        "NSMicrophoneUsageDescription": "This app uses microphone audio features with Rokid AI glasses."
+      },
+      "privacies": [
+        "NSBluetoothAlwaysUsageDescription",
+        "NSBluetoothPeripheralUsageDescription",
+        "NSMicrophoneUsageDescription"
+      ]
+    }
+  }
+}
