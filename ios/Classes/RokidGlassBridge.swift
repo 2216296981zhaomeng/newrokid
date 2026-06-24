@@ -15,7 +15,7 @@ public final class RokidGlassBridge: NSObject {
     private static var initializedSessionType = "customView"
 
     private let client: RGCxrClient = CxrClient.shared
-    private let bridgeVersion = "ios-cxrl-1.0.16-sample-customview-20260624"
+    private let bridgeVersion = "ios-cxrl-1.0.17-bootstrap-customapp-20260624"
     private var cancellables = Set<AnyCancellable>()
     private var eventCallback: RokidGlassCallback?
     private var pendingAuthorizationCallback: RokidGlassCallback?
@@ -562,9 +562,9 @@ public final class RokidGlassBridge: NSObject {
 
     public static func bootstrapDefault() {
         guard !initialized else { return }
-        CxrClient.initialize(mode: .customView, options: .init(appDisplayName: "宅喔经纪人", pageName: nil))
+        CxrClient.initialize(mode: .customApp, options: .init(appDisplayName: "宅喔经纪人", pageName: "com.rokid.cxrswithcxrl"))
         initialized = true
-        initializedSessionType = "customView"
+        initializedSessionType = "customApp"
     }
 
     private func bindEvents() {
