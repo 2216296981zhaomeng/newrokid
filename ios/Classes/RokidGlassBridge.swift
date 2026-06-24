@@ -15,7 +15,7 @@ public final class RokidGlassBridge: NSObject {
     private static var initializedSessionType = "customView"
 
     private let client: RGCxrClient = CxrClient.shared
-    private let bridgeVersion = "ios-cxrl-1.0.15-text-first-20260624"
+    private let bridgeVersion = "ios-cxrl-1.0.16-sample-customview-20260624"
     private var cancellables = Set<AnyCancellable>()
     private var eventCallback: RokidGlassCallback?
     private var pendingAuthorizationCallback: RokidGlassCallback?
@@ -37,6 +37,10 @@ public final class RokidGlassBridge: NSObject {
     private var audioSceneId = -1
     private var audioType = "agent"
     private var customViewOpenRequestId: Int64 = 0
+    private var completedCustomViewOpenRequestId: Int64 = 0
+    private var pendingCustomViewOpenCallback: RokidGlassCallback?
+    private var pendingCustomViewOpenVariantIndex = 0
+    private var pendingCustomViewOpenVariantCount = 0
     private var lastCustomViewStage = "idle"
     private var lastCustomViewVariant = ""
     private var lastCustomViewErrorCode = -1
@@ -210,6 +214,10 @@ public final class RokidGlassBridge: NSObject {
         let variants = customViewOpenVariants(options: options, requestedViewJson: requestedViewJson, title: title, text: text)
         customViewOpenRequestId += 1
         let requestId = customViewOpenRequestId
+        completedCustomViewOpenRequestId = 0
+        pendingCustomViewOpenCallback = nil
+        pendingCustomViewOpenVariantIndex = 0
+        pendingCustomViewOpenVariantCount = variants.count
         sceneReady = false
         lastCustomViewStage = "preparing"
         lastCustomViewVariant = ""
@@ -595,6 +603,12 @@ public final class RokidGlassBridge: NSObject {
             .sink { [weak self] event in
                 guard let self = self else { return }
                 self.sceneReady = event.isRunning
+                if event.isRunning,
+                   self.pendingCustomViewOpenCallback != nil,
+                   self.completedCustomViewOpenRequestId != self.customViewOpenRequestId {
+                    self.completeCustomViewOpenFromRunningEvent()
+                    return
+                }
                 self.emit(event.isRunning ? "customViewOpened" : "customViewClosed", self.stateJson())
             }
             .store(in: &cancellables)
@@ -666,7 +680,8 @@ public final class RokidGlassBridge: NSObject {
             configureAuth(options)
             return
         }
-        if nextType == "customApp" {
+        let customViewUsesCustomAppHost = nextType != "customApp" && boolOption(options, "iosUseCustomAppHostForCustomView", true)
+        if nextType == "customApp" || customViewUsesCustomAppHost {
             CxrClient.initialize(mode: .customApp, options: .init(appDisplayName: appDisplayName, pageName: packageName))
             Self.initializedSessionType = "customApp"
         } else {
@@ -1215,10 +1230,34 @@ public final class RokidGlassBridge: NSObject {
         return jsonString([
             [
                 "action": "update",
+                "id": "tv_description",
+                "props": ["text": text]
+            ],
+            [
+                "action": "update",
                 "id": "textView",
                 "props": ["text": text]
             ]
         ])
+    }
+
+    private func completeCustomViewOpenFromRunningEvent() {
+        guard completedCustomViewOpenRequestId != customViewOpenRequestId else { return }
+        completedCustomViewOpenRequestId = customViewOpenRequestId
+        sceneReady = true
+        lastCustomViewStage = "opened"
+        lastCustomViewErrorCode = -1
+        lastCustomViewMessage = ""
+        let payload = customViewPayload(extra: [
+            "success": true,
+            "variantIndex": pendingCustomViewOpenVariantIndex,
+            "variantCount": pendingCustomViewOpenVariantCount,
+            "openedByEvent": true
+        ])
+        let callback = pendingCustomViewOpenCallback
+        pendingCustomViewOpenCallback = nil
+        emit("customViewOpened", payload)
+        invoke(callback, ok(payload))
     }
 
     private func openCustomViewVariant(
@@ -1229,6 +1268,7 @@ public final class RokidGlassBridge: NSObject {
         attemptTimeoutMs: Int
     ) {
         guard requestId == customViewOpenRequestId else { return }
+        guard completedCustomViewOpenRequestId != requestId else { return }
         guard index < variants.count else {
             sceneReady = false
             lastCustomViewStage = "failed"
@@ -1251,6 +1291,9 @@ public final class RokidGlassBridge: NSObject {
         lastCustomViewMessage = ""
         lastCustomViewJson = variant.json
         lastCustomViewJsonBytes = variant.json.data(using: .utf8)?.count ?? 0
+        pendingCustomViewOpenCallback = callback
+        pendingCustomViewOpenVariantIndex = index
+        pendingCustomViewOpenVariantCount = variants.count
         emit("customViewOpenAttempt", customViewPayload(extra: [
             "success": false,
             "variantIndex": index,
@@ -1261,10 +1304,14 @@ public final class RokidGlassBridge: NSObject {
         let finish: (_ success: Bool, _ errorCode: Int?, _ timedOut: Bool) -> Void = { [weak self] success, errorCode, timedOut in
             guard let self = self else { return }
             DispatchQueue.main.async {
-                guard requestId == self.customViewOpenRequestId, !completed else { return }
+                guard requestId == self.customViewOpenRequestId,
+                      self.completedCustomViewOpenRequestId != requestId,
+                      !completed else { return }
                 completed = true
                 self.sceneReady = success
                 if success {
+                    self.completedCustomViewOpenRequestId = requestId
+                    self.pendingCustomViewOpenCallback = nil
                     self.lastCustomViewStage = "opened"
                     self.lastCustomViewErrorCode = -1
                     self.lastCustomViewMessage = ""
@@ -1309,6 +1356,8 @@ public final class RokidGlassBridge: NSObject {
                     ? "openCustomView timeout after \(variants.count) variants, timeoutMs=\(attemptTimeoutMs)"
                     : "openCustomView failed after \(variants.count) variants, lastErrorCode=\(String(describing: errorCode))"
                 self.lastCustomViewMessage = message
+                self.completedCustomViewOpenRequestId = requestId
+                self.pendingCustomViewOpenCallback = nil
                 let payload = self.customViewPayload(extra: [
                     "success": false,
                     "errorCode": timedOut ? 1004 : (errorCode ?? -1),
@@ -1335,12 +1384,12 @@ public final class RokidGlassBridge: NSObject {
         text: String
     ) -> [(name: String, json: String)] {
         var variants: [(name: String, json: String)] = []
+        appendCustomViewVariant(&variants, name: "officialSampleText", json: officialSampleTextCustomViewJson(title: title, text: text))
+        appendCustomViewVariant(&variants, name: "requested", json: requestedViewJson)
         if boolOption(options, "preferMinimalCustomView", false) {
             appendCustomViewVariant(&variants, name: "compact", json: compactCustomViewJson(title: title, text: text))
             appendCustomViewVariant(&variants, name: "textOnly", json: textOnlyCustomViewJson(text: text))
         }
-        appendCustomViewVariant(&variants, name: "officialSampleText", json: officialSampleTextCustomViewJson(title: title, text: text))
-        appendCustomViewVariant(&variants, name: "requested", json: requestedViewJson)
         if boolOption(options, "uploadDefaultIcon", true) {
             appendCustomViewVariant(&variants, name: "officialSampleIcon", json: officialSampleIconCustomViewJson(title: title, text: text))
         }
@@ -1432,8 +1481,7 @@ public final class RokidGlassBridge: NSObject {
                 "orientation": "vertical",
                 "gravity": "center_vertical",
                 "paddingTop": "140dp",
-                "paddingBottom": "100dp",
-                "backgroundColor": "#FF000000"
+                "paddingBottom": "100dp"
             ],
             "children": [
                 [
@@ -1454,14 +1502,15 @@ public final class RokidGlassBridge: NSObject {
                     "props": [
                         "layout_width": "match_parent",
                         "layout_height": "100dp",
-                        "paddingStart": "10dp",
-                        "backgroundColor": "#000000"
+                        "orientation": "",
+                        "gravity": "",
+                        "paddingStart": "10dp"
                     ],
                     "children": [
                         [
                             "type": "TextView",
                             "props": [
-                                "id": "textView",
+                                "id": "tv_description",
                                 "layout_width": "wrap_content",
                                 "layout_height": "wrap_content",
                                 "text": text,
