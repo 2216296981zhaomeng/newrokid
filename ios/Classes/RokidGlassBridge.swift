@@ -15,7 +15,7 @@ public final class RokidGlassBridge: NSObject {
     private static var initializedSessionType = "customView"
 
     private let client: RGCxrClient = CxrClient.shared
-    private let bridgeVersion = "ios-cxrl-1.0.17-bootstrap-customapp-20260624"
+    private let bridgeVersion = "ios-cxrl-1.0.18-sample-icon-customview-20260624"
     private var cancellables = Set<AnyCancellable>()
     private var eventCallback: RokidGlassCallback?
     private var pendingAuthorizationCallback: RokidGlassCallback?
@@ -562,9 +562,9 @@ public final class RokidGlassBridge: NSObject {
 
     public static func bootstrapDefault() {
         guard !initialized else { return }
-        CxrClient.initialize(mode: .customApp, options: .init(appDisplayName: "宅喔经纪人", pageName: "com.rokid.cxrswithcxrl"))
+        CxrClient.initialize(mode: .customView, options: .init(appDisplayName: nil, pageName: nil))
         initialized = true
-        initializedSessionType = "customApp"
+        initializedSessionType = "customView"
     }
 
     private func bindEvents() {
@@ -680,7 +680,7 @@ public final class RokidGlassBridge: NSObject {
             configureAuth(options)
             return
         }
-        let customViewUsesCustomAppHost = nextType != "customApp" && boolOption(options, "iosUseCustomAppHostForCustomView", true)
+        let customViewUsesCustomAppHost = nextType != "customApp" && boolOption(options, "iosUseCustomAppHostForCustomView", false)
         if nextType == "customApp" || customViewUsesCustomAppHost {
             CxrClient.initialize(mode: .customApp, options: .init(appDisplayName: appDisplayName, pageName: packageName))
             Self.initializedSessionType = "customApp"
@@ -1384,14 +1384,14 @@ public final class RokidGlassBridge: NSObject {
         text: String
     ) -> [(name: String, json: String)] {
         var variants: [(name: String, json: String)] = []
+        if boolOption(options, "uploadDefaultIcon", true) {
+            appendCustomViewVariant(&variants, name: "officialSampleIcon", json: officialSampleIconCustomViewJson(title: title, text: text))
+        }
         appendCustomViewVariant(&variants, name: "officialSampleText", json: officialSampleTextCustomViewJson(title: title, text: text))
         appendCustomViewVariant(&variants, name: "requested", json: requestedViewJson)
         if boolOption(options, "preferMinimalCustomView", false) {
             appendCustomViewVariant(&variants, name: "compact", json: compactCustomViewJson(title: title, text: text))
             appendCustomViewVariant(&variants, name: "textOnly", json: textOnlyCustomViewJson(text: text))
-        }
-        if boolOption(options, "uploadDefaultIcon", true) {
-            appendCustomViewVariant(&variants, name: "officialSampleIcon", json: officialSampleIconCustomViewJson(title: title, text: text))
         }
         appendCustomViewVariant(&variants, name: "nativeDefault", json: defaultCustomViewJson(title: title, text: text))
         appendCustomViewVariant(&variants, name: "compact", json: compactCustomViewJson(title: title, text: text))
@@ -1418,7 +1418,7 @@ public final class RokidGlassBridge: NSObject {
         let iconsJson = jsonString([
             [
                 "name": "icon_0",
-                "data": "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/p9sAAAAASUVORK5CYII="
+                "data": "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAEy0lEQVR4nO2aW2jbVhjHP0m+JrGdLM1aN+mS3Tfah+6pW8maXejGBruw0kBJMrKHspfRMehgZTBGYWywwi7sZfShZU4opHTsAhtb6dZ0YWzspQ8tg6yUJEvqpE2a2okvsWWffkdGkaNYtlTLkhzpB/50juSP5P+zJEtKGLA5ugmYiqYG25p9J3BoJhMA8Ibfz5wHlegigIYnACfubvbhzHQmUMC9uFQFg6+qEMPjECwiAFCA6lyq31iK4vAUWwmQh6fYRkCp8BRbCFAKz3HMdGvA24FD06mZgHLhWxo98yzL7MSp6dRMQCpFCC4sjyNALwGDBz8TAv97+Q+sAOfPncEqsbicgSyfB7eLhZYmz+rcSMSfXcxTz+7DCvDo9iexApw8/o5iTsUNFEdABQFWRVcB2Wwaroz/g7P6E/DwI08Ay7nuXEDf4MckOjMOiUQMZ/UnoLExBOH2h2D45BHFnIobKLt2vyYcAiIjZ4axWp/efX1YJf7+81vFnIobKLYSEI9nuwnDjnAs04YvF67acOTyhMfXDYbke4NB9xiuKgig4TkXd4Fl1F9A1DN5QkiOz+2hEoTA8aXcNfw+DePQNuD1SjQY4LYKAhLJfN4un74IHgp8UyPrFkLLr/HJCJYimF4sRVy/lcYqYZXnAFqh9wyOAFwKAnCXgKVUFvgcgXMfenGtxNMfrA0ciYxilRgY6MFqfViWARfHQMDvBvymkwQsJ/Lk5tIKiPvB70fXfqIbRYAITX1XwAt4DqBDgOj8Cslkjb2LMxuPm4XwJm9BwNQsHgMEBzaCHg7bNvsKAiajKZvFL9AZxpMALh0BjgBHgCNAECC/j96oiM81HAFyAeIV3qnIJ1glfvr1Z6wSnbzw9lVuLh4iLfwtBofruOrt4u8PHnXhsOZMutb+Ci8+9wJWiQMD72GVrlx1EzC0cnq5L/5jEw7XMRx8abnfu7/kNr3RXcC2zu1YAb4+fgyrhFxAK0v4/xbe5uR7waKrmTzY+kVuIW/MIza5gDcPHsYK8P/kZaw1FEChEr5Mnk4/nrnkwyn85dmRPtSw32dUeIpuAubmruOdobBK4NOPXscqPQegAr5q8ePIOry1mFoVID6fePf9b7AW4DgO2to24UiFgEwmA7FYHHK5HM7qXwANHwoFweMp/A2xogCR2dk5rPoI4PPzY6nsOAS8u7txqjvlBGzZshmrxDoBE9EUPXuFaiWAhp9LRITgQc+uMS0SaK8acVoFEPzcu8L+LqFj8lryO3xM8kotBNAAYngRtRKKeyv1aBWAJ7nvO7c2vCp0RKOprhWAi0OR0RBOV6lWQHEAOZUCleot16NFQP9AT8wLsDMc9k8UOhAq4ZffLo1Ozyzcg1OBagSUCiBHKVC5XqUetQI62lunnn9mRw8ND0ihowL0qTEuVAsoF0COPJCaXnkPpZQA+tQXF2Wp+AaKFgFqAsgRA2npFXtwKGAJAVoCyPG57ruY5q9q+j/DYgmmC6gmfDWIEkwVYFZ4ESrhSPKxblMEmB1eZGi6PTbW8bLwNW6YAKuEpxw7ewGu7D2FI4MEfB5KWCY8xVAB3cmZWH/DD8LuZhUMFfDA2QNweO8eHFkHR4AjwGABVsQwAVbHEVArAfWGI0AvARuZ25Vckm7+H/TuAAAAAElFTkSuQmCC"
             ]
         ])
         client.sendCustomViewIcons(iconsJson) { [weak self] success in
@@ -1534,8 +1534,7 @@ public final class RokidGlassBridge: NSObject {
                 "orientation": "vertical",
                 "gravity": "center_vertical",
                 "paddingTop": "140dp",
-                "paddingBottom": "100dp",
-                "backgroundColor": "#FF000000"
+                "paddingBottom": "100dp"
             ],
             "children": [
                 [
@@ -1556,8 +1555,9 @@ public final class RokidGlassBridge: NSObject {
                     "props": [
                         "layout_width": "match_parent",
                         "layout_height": "100dp",
-                        "paddingStart": "10dp",
-                        "backgroundColor": "#000000"
+                        "orientation": "",
+                        "gravity": "",
+                        "paddingStart": "10dp"
                     ],
                     "children": [
                         [
@@ -1574,7 +1574,7 @@ public final class RokidGlassBridge: NSObject {
                         [
                             "type": "TextView",
                             "props": [
-                                "id": "textView",
+                                "id": "tv_description",
                                 "layout_width": "wrap_content",
                                 "layout_height": "wrap_content",
                                 "text": text,
