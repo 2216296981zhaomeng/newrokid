@@ -1,7 +1,7 @@
 {
   "name": "Rokid-Glass",
   "id": "Rokid-Glass",
-  "version": "1.0.19",
+  "version": "1.0.20",
   "description": "Rokid CXR-L native plugin for authorization, custom view teleprompter setup, and audio streaming.",
   "_dp_type": "nativeplugin",
   "_dp_nativeplugin": {

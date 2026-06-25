@@ -15,7 +15,7 @@ public final class RokidGlassBridge: NSObject {
     private static var initializedSessionType = "customView"
 
     private let client: RGCxrClient = CxrClient.shared
-    private let bridgeVersion = "ios-cxrl-1.0.19-require-auth-session-20260624"
+    private let bridgeVersion = "ios-cxrl-1.0.20-customview-customapp-host-20260625"
     private var cancellables = Set<AnyCancellable>()
     private var eventCallback: RokidGlassCallback?
     private var pendingAuthorizationCallback: RokidGlassCallback?
@@ -136,7 +136,7 @@ public final class RokidGlassBridge: NSObject {
         }
 
         let cachedSessionId = client.auth.currentSessionId ?? sessionId
-        if client.auth.isAuthenticated() && !forceReauthorize && (!requireSessionId || !cachedSessionId.isEmpty) {
+        if client.auth.isAuthenticated() && !forceReauthorize {
             token = client.auth.currentToken ?? token
             sessionId = cachedSessionId
             deviceName = client.auth.currentDeviceName ?? currentDeviceName()
@@ -149,7 +149,7 @@ public final class RokidGlassBridge: NSObject {
             invoke(callback, ok(payload))
             return
         }
-        if client.auth.isAuthenticated() && requireSessionId && (forceReauthorize || cachedSessionId.isEmpty) {
+        if client.auth.isAuthenticated() && requireSessionId && forceReauthorize && cachedSessionId.isEmpty {
             client.auth.clearAuthentication()
             token = ""
             sessionId = ""
@@ -177,13 +177,6 @@ public final class RokidGlassBridge: NSObject {
             DispatchQueue.main.async {
                 switch result {
                 case .success(let auth):
-                    if requireSessionId && (auth.1 ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                        self.client.auth.clearAuthentication()
-                        self.token = ""
-                        self.sessionId = ""
-                        self.completeAuthorizationFailure(requestId, message: "Rokid authorization missing sessionId")
-                        return
-                    }
                     self.completeAuthorizationSuccess(requestId, token: auth.0, sessionId: auth.1, deviceName: self.currentDeviceName())
                 case .failure(let authError):
                     self.completeAuthorizationFailure(requestId, message: authError.localizedDescription)
@@ -687,7 +680,7 @@ public final class RokidGlassBridge: NSObject {
             configureAuth(options)
             return
         }
-        let customViewUsesCustomAppHost = nextType != "customApp" && boolOption(options, "iosUseCustomAppHostForCustomView", false)
+        let customViewUsesCustomAppHost = nextType != "customApp" && boolOption(options, "iosUseCustomAppHostForCustomView", true)
         if nextType == "customApp" || customViewUsesCustomAppHost {
             CxrClient.initialize(mode: .customApp, options: .init(appDisplayName: appDisplayName, pageName: packageName))
             Self.initializedSessionType = "customApp"
@@ -758,11 +751,6 @@ public final class RokidGlassBridge: NSObject {
 
     private func ensureAuthenticated(_ callback: RokidGlassCallback?) -> Bool {
         if client.auth.isAuthenticated() {
-            let currentSessionId = client.auth.currentSessionId ?? sessionId
-            if currentSessionId.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-                invoke(callback, error(1002, "Rokid authorization sessionId is required"))
-                return false
-            }
             return true
         }
         invoke(callback, error(1002, "Rokid authorization is required"))
